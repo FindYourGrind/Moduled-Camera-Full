@@ -1,0 +1,67 @@
+#!/bin/sh
+# chkonfig: - 98 02
+# discription: Plate number finder with server
+# processname: plate_camera
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+KIND="Camera"
+
+start() {
+	echo -n $"Starting $KIND services: "
+	start-stop-daemon -Sbvmp  /home/pi/ModuledCameraFull/Moduled-Camera-Admin-Server/.node/pid -x /usr/local/bin/node -- /home/pi/ModuledCameraFull/Moduled-Camera-Admin-Server/server.js
+	start-stop-daemon -Sbvmp  /home/pi/ModuledCameraFull/Plate-Number-Finder-Moduled/.python/pid -x /usr/bin/python2.7 --  /home/pi/ModuledCameraFull/Plate-Number-Finder-Moduled/framerPI.py
+	echo
+}
+
+stop() {
+	echo -n $"Shutting down $KIND services: "
+	start-stop-daemon -Kvp /home/pi/ModuledCameraFull/Moduled-Camera-Admin-Server/.node/pid
+	start-stop-daemon -Kvp  /home/pi/ModuledCameraFull/Plate-Number-Finder-Moduled/.python/pid
+	echo
+}
+
+restart() {
+	echo -n $"Restarting $KIND services: "
+	start-stop-daemon -Kvp /home/pi/ModuledCameraFull/Moduled-Camera-Admin-Server/.node/pid
+	start-stop-daemon -Kvp  /home/pi/ModuledCameraFull/Plate-Number-Finder-Moduled/.python/pid
+	echo -n $"Stopped"
+	sleep 5
+	start-stop-daemon -Sbvmp  /home/pi/ModuledCameraFull/Moduled-Camera-Admin-Server/.node/pid -x /usr/local/bin/node -- /home/pi/ModuledCameraFull/Moduled-Camera-Admin-Server/server.js
+	start-stop-daemon -Sbvmp  /home/pi/ModuledCameraFull/Plate-Number-Finder-Moduled/.python/pid -x /usr/bin/python2.7 --  /home/pi/ModuledCameraFull/Plate-Number-Finder-Moduled/framerPI.py
+	echo -n $"Started"
+	echo
+}
+
+update() {
+	echo -n $"Updating $KIND services: "
+	start-stop-daemon -Kvp /home/pi/ModuledCameraFull/Moduled-Camera-Admin-Server/.node/pid
+	start-stop-daemon -Kvp  /home/pi/ModuledCameraFull/Plate-Number-Finder-Moduled/.python/pid
+	echo -n $"Stopped"
+	cd /home/pi/ModuledCameraFull/
+	sudo git pull
+	echo -n $"Updated"
+	start-stop-daemon -Sbvmp  /home/pi/ModuledCameraFull/Moduled-Camera-Admin-Server/.node/pid -x /usr/local/bin/node -- /home/pi/ModuledCameraFull/Moduled-Camera-Admin-Server/server.js
+	start-stop-daemon -Sbvmp  /home/pi/ModuledCameraFull/Plate-Number-Finder-Moduled/.python/pid -x /usr/bin/python2.7 --  /home/pi/ModuledCameraFull/Plate-Number-Finder-Moduled/framerPI.py
+	echo -n $"Started"	
+	echo
+}
+
+
+case "$1" in
+	start)
+		start
+		;;
+	stop)
+		stop
+		;;
+	restart)
+		restart
+		;;
+	update)
+		update
+		;;
+	*)
+		echo $"Usage: $0 {start/stop/restart/update}"
+		exit 1
+esac
+exit $?
