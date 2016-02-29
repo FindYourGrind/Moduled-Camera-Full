@@ -14,11 +14,11 @@ def doConfig(path, typeOfConfig):
     return config
 
 
-def doRequest(data):
+def doPlateInfoRequest(data):
     configRequester = doConfig(gConfigPath, 'requester')
     configGeneral = doConfig(gConfigPath, 'general')
 
-    r = requests.post(configRequester['url'].strip(),
+    r = requests.post(configRequester['urlForPlate'].strip(),
                      json={
                         "dev_id": configGeneral['cameraID'],
                         "place": data['place'],
@@ -26,6 +26,22 @@ def doRequest(data):
                         "car_plate_raw": data['badPlates'],
                         "direction": data['direction'],
                         "img": data['image']
+                     })
+
+    if r == 200:
+        return True
+    else:
+        return False
+
+
+def doCounterRequest(direction):
+    configRequester = doConfig(gConfigPath, 'requester')
+    configGeneral = doConfig(gConfigPath, 'general')
+
+    r = requests.post(configRequester['urlForCounter'].strip(),
+                     json={
+                        "dev_id": configGeneral['cameraID'],
+                        "direction": direction
                      })
 
     if r == 200:

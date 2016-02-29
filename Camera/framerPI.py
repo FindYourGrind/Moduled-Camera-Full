@@ -269,12 +269,14 @@ def action(paths, direction, workers, req):
     results = p.map(plater.plate, paths)
     p.close()
 
+    requester.doCounterRequest(direction)
+
     for result in results:
         if result is not False:
             data = generateRequestData(results, direction, workers)
 
             if req:
-                requester.doRequest(data)
+                requester.doPlateInfoRequest(data)
 
             logData = {}
 

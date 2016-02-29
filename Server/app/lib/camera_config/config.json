@@ -38,6 +38,7 @@
     }
   },
   "requester": {
-    "url": "http://liko-t4p.rhcloud.com/rest/v2/camera/log"
+    "urlForPlate": "http://liko-t4p.rhcloud.com/rest/v2/camera/log",
+    "urlForCounter": "http://liko-t4p.rhcloud.com/rest/v2/camera/counter"
   }
 }
